@@ -68,15 +68,16 @@ def query_qdrant( query_text,client):
         limit=top_k  # Nombre de résultats à retourner
     )
     
-    return results
+    #return results
 
-
-    """
+    res = []
+    
     # Affichage des résultats
     for result in results:
-        print(f"ID: {result.id}, Score: {result.score}, Text: {result.payload['text']}")
+        #print(f"ID: {result.id}, Score: {result.score}, Text: {result.payload['text']}")
 
-    """
+        res.append(result.payload['text'])
+    return res
 
 
 

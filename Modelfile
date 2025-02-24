@@ -1,0 +1,2 @@
+FROM deepseek
+PARAMETER system "Réponds toujours en français."
