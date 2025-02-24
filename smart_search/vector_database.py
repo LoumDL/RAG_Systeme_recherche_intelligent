@@ -7,12 +7,10 @@ import numpy as np
 
 
 
-
-def qdrant(documents):
+def insert_documents_into_qdrant(documents):
+    collection_name="my_books"
     encoder = SentenceTransformer("all-MiniLM-L6-v2")
-
     client = QdrantClient(":memory:")  # Remplace par ton endpoint si nécessaire
-    collection_name = "my_books"
 
     # Vérification et création de la collection
     try:
@@ -41,23 +39,45 @@ def qdrant(documents):
             )
         )
 
+    # Insertion des points dans la base de données
     client.upload_points(collection_name=collection_name, points=points)
 
-    print(f"✅ {len(documents)} chunks ont été indexés dans Qdrant.")
-
-    return client, encoder  # Retourner le client et l'encodeur pour une réutilisation
-
+    print(f"✅ {len(documents)} documents ont été indexés dans Qdrant.")
+    return client  # Retourne le client pour utilisation dans les requêtes
 
 
 
 
-def query(client, encoder, question: str):
-    hits = client.search(
-        collection_name="my_books",
-        query_vector=encoder.encode(question).tolist(),
-        limit=3,
+
+
+def query_qdrant( query_text,client):
+
+    
+    collection_name="my_books"
+    top_k=1
+
+    encoder = SentenceTransformer("all-MiniLM-L6-v2")
+    
+    # Conversion de la requête en vecteur
+    query_vector = encoder.encode(query_text, normalize_embeddings=True)
+    
+    # Effectuer la recherche dans Qdrant
+    results = client.search(
+        collection_name=collection_name,
+        query_vector=query_vector.tolist(),
+        limit=top_k  # Nombre de résultats à retourner
     )
     
-    return hits     
+    return results
+
+
+    """
+    # Affichage des résultats
+    for result in results:
+        print(f"ID: {result.id}, Score: {result.score}, Text: {result.payload['text']}")
+
+    """
+
+
 
 

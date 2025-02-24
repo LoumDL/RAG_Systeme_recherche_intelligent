@@ -1,20 +1,17 @@
 
-from marker.converters.pdf import PdfConverter # Import PdfConverter here
+from marker.converters.pdf import PdfConverter
 from marker.models import create_model_dict
 from marker.config.parser import ConfigParser
 from IPython.display import Markdown
 from chonkie import SemanticChunker
 from langchain_community.document_loaders import UnstructuredMarkdownLoader
 
-from function_qdrant_bd import query,qdrant
-
-
 
 
 
 
 config = {
-    "output_format": "markdown",  # This is causing the issue
+    "output_format": "markdown",  
     "ADDITIONAL_KEY": "VALUE"
 }
 config_parser = ConfigParser(config)
@@ -29,23 +26,15 @@ def extraction_markdown(file_path: str):
         processor_list=config_parser.get_processors(),
         renderer=config_parser.get_renderer()
     )
-    markdown = converter(file_path)  # Get the JSON data
+    markdown = converter(file_path)   
 
-    # Access the markdown content from the JSON data
-    # (assuming 'content' is the key for markdown content)
-    #markdown_content = markdown_data['content']
-
-    return markdown  # Return the markdown content
+    return markdown  
 
 
 
 def markdown_file(markdown,i):
     with open(f"fichier{i}.md", "w", encoding="utf-8") as f:
-        f.write(markdown.markdown) # Changed 'makdown' to 'markdown'
-    print("Fichier Markdown créé avec succès !")
-    print(f"fichier{i}.md")
-
-
+        f.write(markdown.markdown) 
 
 
 def Chunker(markdown_path):
@@ -73,34 +62,6 @@ def Chunker(markdown_path):
 
 
 
-
-
-"""
-file_path = "../isfad_courses/youssaou_aw.pdf"
-
-markdown = extraction_markdown(file_path)
-
-print(markdown.markdown)
-
-# on cree le fichier markdown 
-i=0
-markdown_file(markdown,i)
-
-"""
-"""
-# on effectue les chunks 
-
-chunks = Chunker("./fichier0.md")
-
-client, encoder = qdrant(chunks)
-
-
-question = " mon parcours académique?"
-
-resultats = query(client,encoder,question)
-print(resultats[0])
-
-"""
 
 
 
