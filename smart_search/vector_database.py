@@ -9,7 +9,7 @@ import numpy as np
 
 def insert_documents_into_qdrant(documents):
     collection_name="my_books"
-    encoder = SentenceTransformer("all-MiniLM-L6-v2")
+    encoder = SentenceTransformer("all-MiniLM-L6-v2") # all-MiniLM-L6-v2          #"Alibaba-NLP/gte-Qwen2-7B-instruct", trust_remote_code=True
     client = QdrantClient(":memory:")  # Remplace par ton endpoint si nécessaire
 
     # Vérification et création de la collection
