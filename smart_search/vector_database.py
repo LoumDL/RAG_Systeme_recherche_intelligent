@@ -9,7 +9,7 @@ import numpy as np
 
 def insert_documents_into_qdrant(documents):
     collection_name="my_books"
-    encoder = SentenceTransformer("all-MiniLM-L6-v2") # all-MiniLM-L6-v2          #"Alibaba-NLP/gte-Qwen2-7B-instruct", trust_remote_code=True
+    encoder = SentenceTransformer("Alibaba-NLP/gte-Qwen2-7B-instruct", trust_remote_code=True) # all-MiniLM-L6-v2          #"Alibaba-NLP/gte-Qwen2-7B-instruct", trust_remote_code=True
     client = QdrantClient(":memory:")  # Remplace par ton endpoint si nécessaire
 
     # Vérification et création de la collection
@@ -56,7 +56,7 @@ def query_qdrant( query_text,client):
     collection_name="my_books"
     top_k=1
 
-    encoder = SentenceTransformer("all-MiniLM-L6-v2")
+    encoder = SentenceTransformer("Alibaba-NLP/gte-Qwen2-7B-instruct", trust_remote_code=True)
     
     # Conversion de la requête en vecteur
     query_vector = encoder.encode(query_text, normalize_embeddings=True)
