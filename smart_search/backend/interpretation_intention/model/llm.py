@@ -1,6 +1,5 @@
 import ollama
-#from load_the_database import load_the_database
-from vector_database import query_qdrant
+from ..bd_qdrant.vector_database import query_qdrant
 from langdetect import detect
 
 

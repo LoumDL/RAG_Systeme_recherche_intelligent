@@ -1,6 +1,6 @@
-# load_the_database.py
-from word_processing_function import extraction_markdown, markdown_file, Chunker
-from vector_database import insert_documents_into_qdrant, query_qdrant
+# Description: Ce fichier permet de charger les fichiers PDF dans la base de données Qdrant.
+from ..traitement.word_processing_function import extraction_markdown, markdown_file, Chunker
+from ..bd_qdrant.vector_database import insert_documents_into_qdrant, query_qdrant
 from pathlib import Path
 import os
 

@@ -1,5 +1,7 @@
-from llm import llm
-from load_the_database import getClient, load_the_database
+#from llm import llm
+from backend.interpretation_intention.model.llm import llm
+#from load_the_database import getClient, load_the_database
+from backend.interpretation_intention.bd_qdrant.load_the_database import getClient, load_the_database
 
 
 
