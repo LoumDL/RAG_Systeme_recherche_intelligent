@@ -1,17 +1,24 @@
 # Description: Ce fichier permet de charger les fichiers PDF dans la base de données Qdrant.
-from ..traitement.word_processing_function import extraction_markdown, markdown_file, Chunker
-from ..bd_qdrant.vector_database import insert_documents_into_qdrant, query_qdrant
+from traitement.word_processing_function import (
+    extraction_markdown, markdown_file, Chunker
+)
+
+from bd_qdrant.vector_database import insert_documents_into_qdrant, query_qdrant, initialize_collection
 from pathlib import Path
 import os
 
-client = None  # Variable globale
+
+initialize_collection()
+
 
 def load_the_database():
-    global client  # Permet de modifier la variable globale
+     
 
     # Récupérer les fichiers PDF
+    
     chemin_dossier = Path("/home/dame/djibyloum/RAG_Hakili/RAG_Systeme_recherche_intelligent/isfad_courses") 
     fichiers_pdf = list(chemin_dossier.rglob("*.pdf"))  
+
 
     if not fichiers_pdf:
         print("Aucun fichier PDF trouvé.")
@@ -27,10 +34,13 @@ def load_the_database():
             continue
 
         chunks = Chunker(fichier_markdown)
-        client = insert_documents_into_qdrant(chunks)  # Mise à jour de la variable globale
 
-def getClient():
-    return client 
+        insert_documents_into_qdrant(chunks)  # Mise à jour de la variable globale
+
+
+
+
+
 
 if __name__ == "__main__":
     load_the_database()

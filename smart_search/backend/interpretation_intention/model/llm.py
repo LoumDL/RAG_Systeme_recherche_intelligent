@@ -1,12 +1,12 @@
 import ollama
-from ..bd_qdrant.vector_database import query_qdrant
+from bd_qdrant.vector_database import query_qdrant
 from langdetect import detect
 
 
-def llm(question: str, client):
+def llm(question: str):
     # Charger le client de la base de données
 
-    resultats = query_qdrant(question, client)
+    resultats = query_qdrant(question)
     texte = resultats[0][1] if resultats else ""  # Vérifier si des résultats existent
 
     # Construire le prompt
@@ -36,10 +36,3 @@ def llm(question: str, client):
     return french_text
 
 
-"""
-client = load_the_database()
-question = "quel est le poste que je vise au sein de sonatel ?"
-resultats = query_qdrant(question, client)
-
-texte = resultats[0][1] if resultats else ""  # Vérifier si des résultats existent
-"""
