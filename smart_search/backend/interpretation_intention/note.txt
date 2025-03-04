@@ -3,3 +3,19 @@ pip install uvicorn[standard]
 
 
 uvicorn main:app --host 0.0.0.0 --port 8000 --reload
+
+
+base vectoriel qdrant: 
+
+    Nous avons utiliser une image dockerq_drant avec la commande :
+        docker run -p 6333:6333 -p 6334:6334 -v qdrant_storage:/qdrant/storage qdrant/qdrant
+       
+    et nous pouvons acceder a son interface web par url: 
+             http://localhost:6333/dashboard
+    
+
+    a chaque demarrage il faut run la base et la charger de nouveau .  
+
+    
+
+    

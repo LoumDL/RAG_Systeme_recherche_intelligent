@@ -14,4 +14,4 @@ def prompt(question: Qestion):
 
 # To run the server, execute the following command:
 # uvicorn backend.api.api:app --reload
-# Then, go to http://
+# Then, go to http://localhost:8

@@ -17,7 +17,7 @@ def initialize_collection():
         client.create_collection(
             collection_name=collection_name,
             vectors_config=models.VectorParams(
-                size=384,           #encoder.get_sentence_embedding_dimension(),
+                size=3584,           #encoder.get_sentence_embedding_dimension(),
                 distance=models.Distance.COSINE,
             ),
         )

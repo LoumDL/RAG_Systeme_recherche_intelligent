@@ -32,9 +32,10 @@ def extraction_markdown(file_path: str):
 
 
 
-def markdown_file(markdown,i):
-    with open(f"fichier{i}.md", "w", encoding="utf-8") as f:
-        f.write(markdown.markdown) 
+def markdown_file(markdown, fichier_markdown):
+    with open(fichier_markdown, "w", encoding="utf-8") as f:
+        f.write(markdown.markdown)
+ 
 
 
 def Chunker(markdown_path):
