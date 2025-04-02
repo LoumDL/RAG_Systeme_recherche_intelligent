@@ -1,11 +1,17 @@
 import ollama
-from bd_qdrant.vector_database import query_qdrant
+from .db import query_qdrant
 from langdetect import detect
 
-
 def llm(question: str):
-    # Charger le client de la base de données
-
+    """
+    Interroge un modèle LLM (deepseek-r1) avec une question et des données récupérées depuis une base.
+    
+    Args:
+        question (str): La question posée par l'utilisateur.
+    
+    Returns:
+        list: Une liste de phrases en français extraites de la réponse du modèle.
+    """
     resultats = query_qdrant(question)
     texte = resultats[0][1] if resultats else ""  # Vérifier si des résultats existent
 
@@ -35,4 +41,20 @@ def llm(question: str):
 
     return french_text
 
+def chatbox(question: str):
+    """
+    Fonction de chat qui utilise le LLM pour répondre à une question en français.
+    
+    Args:
+        question (str): La question posée par l'utilisateur.
+    
+    Returns:
+        list: Liste des réponses filtrées en français.
+    """
+    resultats = llm(question)
+    return resultats
 
+if __name__ == "__main__":
+    question = input("Posez votre question :  ")
+    resl = chatbox(question)
+    print(resl)
