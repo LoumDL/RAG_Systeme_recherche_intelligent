@@ -15,7 +15,7 @@ class Question(BaseModel):
 # Création de l'instance FastAPI
 app = FastAPI()
 
-@app.post("/llm")
+@app.post("/smartsearch")
 def prompt(question: Question):
     """
     Point de terminaison pour obtenir une réponse à une question via un modèle LLM.
