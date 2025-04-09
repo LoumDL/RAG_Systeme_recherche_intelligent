@@ -1,6 +1,8 @@
 from fastapi import FastAPI
 from pydantic import BaseModel
-from src.llm import chatbox
+from src.llm import chatbox 
+from src.db import inserer_chat , modeliserdonnee
+import uvicorn
 
 # Définition du modèle de la question (utilisé pour la validation des données entrantes)
 class Question(BaseModel):
@@ -34,9 +36,25 @@ def prompt(question: Question):
             "la reponse est": "Voici la réponse à votre question."
         }
     """
-    print(question.question)
+    
     reponse = chatbox(question.question)  # Appelle la fonction chatbox pour obtenir la réponse à la question
+    reponse = reponse[0] if reponse else "Aucune réponse trouvée."  # Vérifie si une réponse a été obtenue
+
+    # Modélise les données à insérer dans la base de données
+    donnee = modeliserdonnee(question.question, reponse)
+    # Insère les données dans la base de données
+    inserer_chat(donnee)
+
     return {"la reponse est": "{}".format(reponse)}  # Retourne la réponse générée sous forme de dictionnaire
+
+
+# Parameters
+SERVER_ADDR = "0.0.0.0"
+SERVER_PORT = 8000
+
+
+if __name__ == "__main__":
+    uvicorn.run(app, host=SERVER_ADDR, port=SERVER_PORT)
 
 
 
