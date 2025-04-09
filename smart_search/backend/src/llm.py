@@ -1,6 +1,7 @@
 import ollama
 from .db import query_qdrant
 from langdetect import detect
+#from db import enregistrer_historique 
 
 def llm(question: str):
     """
@@ -40,6 +41,10 @@ def llm(question: str):
                 print(f"Erreur de détection de langue : {e}")  # Afficher l'erreur sans bloquer l'exécution
 
     return french_text
+
+
+
+
 
 def chatbox(question: str):
     """

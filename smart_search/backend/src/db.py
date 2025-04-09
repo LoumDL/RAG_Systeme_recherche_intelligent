@@ -4,6 +4,13 @@ from .texte import (extraction_markdown, markdown_file, Chunker)
 from pathlib import Path
 import os
 
+from datetime import datetime, timezone
+from pymongo import MongoClient
+from fastapi.encoders import jsonable_encoder
+
+
+
+
 # Initialisation du client Qdrant et de l'encodeur
 client = QdrantClient(url="http://localhost:6333")
 encoder = SentenceTransformer("Alibaba-NLP/gte-Qwen2-1.5B-instruct", trust_remote_code=True)
@@ -92,6 +99,63 @@ def load_the_database():
 
         chunks = Chunker(str(fichier_markdown))
         insert_documents_into_qdrant(chunks)
+
+
+
+MONGODB_URI = "mongodb://localhost:27017"
+DATABASE_NAME = "history_smart_search"
+
+client_mongodb = MongoClient(MONGODB_URI)
+db = client_mongodb[DATABASE_NAME]
+
+
+def inserer_chat(donnee:dict):
+    """
+    Insère des données dans la collection MongoDB.
+    """
+    donnee = jsonable_encoder(donnee)
+    try:
+        db["history"].insert_one(donnee)
+        print("Données insérées avec succès.")
+    except Exception as e:
+        print(f"Erreur lors de l'insertion des données: {e}")
+
+def modeliserdonnee(question:str, reponse:str):
+    """
+    Modélise les données à insérer dans la base de données.
+    
+    Args:
+        question (str): La question posée par l'utilisateur.
+        reponse (str): La réponse générée par le modèle LLM.
+    
+    Returns:
+        dict: Un dictionnaire contenant la question et la réponse.
+    """
+    return {
+        "question": question,
+        "reponse": reponse,
+        "timestamp": datetime.now(timezone.utc).isoformat()
+    }
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
 
 if __name__ == "__main__":
     initialize_collection()
