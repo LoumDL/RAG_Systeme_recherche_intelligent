@@ -1,0 +1,23 @@
+
+
+openai
+fastapi
+pydantic
+uvicorn
+pymongo[srv]
+redis[hiredis]
+streamlit
+marker-pdf
+markdown
+"chonkie[semantic]"
+"unstructured[md]" nltk
+langchain-community
+langchain-huggingface
+--upgrade tensorflow protobuf
+-qU langchain-qdrant
+sentence-transformers
+moodle-dl
+
+
+
+
