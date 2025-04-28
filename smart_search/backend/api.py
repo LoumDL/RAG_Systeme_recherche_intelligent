@@ -1,9 +1,14 @@
-from fastapi import FastAPI, HTTPException
+from fastapi import FastAPI, HTTPException, File, UploadFile, Form
 from pydantic import BaseModel
 from fastapi.encoders import jsonable_encoder
 from src.llm import chatbox
 from src.db import inserer_chat, modeliserdonnee, set_redis, get_redis
 import uvicorn
+from typing import Annotated
+from src.llm_multimodal import llm_image, llm_pdf
+import tempfile, os
+from pathlib import Path
+
 
 app = FastAPI()
 
@@ -45,6 +50,45 @@ def smart_search_endpoint(payload: Question):
 
 
 
+
+
+
+
+
+@app.post("/smartsearch/multimodal")
+async def multimodal_search(prompt: Annotated[str, Form()],file: Annotated[UploadFile, File()]) -> dict:
+    
+    """
+    Route FastAPI pour traiter une image ou un PDF envoyé en multipart/form-data :
+      - sauvegarde le fichier dans un fichier temporaire
+      - appelle llm_image ou llm_pdf selon le content_type
+      - nettoie le fichier temporaire
+    """
+
+
+
+
+    content_type = file.content_type
+    # Lecture du fichier en mémoire
+    contents = await file.read()
+    # Création d'un fichier temporaire avec la bonne extension
+    suffix = Path(file.filename).suffix
+    with tempfile.NamedTemporaryFile(delete=False, suffix=suffix) as tmp:
+        tmp.write(contents)
+        tmp.flush()
+        tmp_path = tmp.name
+
+    try:
+        if content_type in ("image/jpeg", "image/png", "image/jpg"):
+            reponse = llm_image(tmp_path, prompt)
+        elif content_type == "application/pdf":
+            reponse = llm_pdf(tmp_path, prompt)
+        else:
+            raise HTTPException(status_code=400, detail="Type de fichier non pris en charge.")
+    finally:
+        os.remove(tmp_path)
+
+    return {"la reponse est": reponse}
 
 
 
