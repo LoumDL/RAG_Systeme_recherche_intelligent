@@ -17,6 +17,8 @@ langchain-huggingface
 -qU langchain-qdrant
 sentence-transformers
 moodle-dl
+ollama
+IPython
 
 
 

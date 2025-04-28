@@ -7,6 +7,7 @@ import os
 from datetime import datetime, timezone
 from pymongo import MongoClient
 from fastapi.encoders import jsonable_encoder
+import redis
 
 
 
@@ -136,6 +137,31 @@ def modeliserdonnee(question:str, reponse:str):
         "reponse": reponse,
         "timestamp": datetime.now(timezone.utc).isoformat()
     }
+
+
+# Connexion à Redis
+host = "127.0.0.1"
+port = 6379
+pool = redis.ConnectionPool(host=host, port=port, db=0)
+r = redis.Redis(connection_pool=pool)
+
+def set_redis(eleve:dict):
+   
+    compteur_key = "eleve:id"
+    new_id = r.incr(compteur_key)
+    cle = f"eleve:{new_id}"
+
+    # Enregistre le hash
+    r.hset(cle, mapping=eleve)
+
+    return cle
+
+def get_redis(cle:str):
+
+    result = r.hgetall(cle)
+    resultat = jsonable_encoder(result)
+    return resultat
+
 
 
 

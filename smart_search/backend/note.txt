@@ -16,6 +16,14 @@ base vectoriel qdrant:
 
     a chaque demarrage il faut run la base et la charger de nouveau .  
 
+
+
+
+    Pour l'installation de redis , on allons utiliser un conteneur docker : 
+
+    -  docker run -d --name redis-stack -p 6379:6379 -p 8001:8001 redis/redis-stack:latest
+    
+
     
 
     
