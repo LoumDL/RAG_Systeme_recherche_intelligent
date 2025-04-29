@@ -65,7 +65,7 @@ async def multimodal_search(prompt: Annotated[str, Form()],file: Annotated[Uploa
       - nettoie le fichier temporaire
     """
 
-
+    key_openapi = "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"
 
 
     content_type = file.content_type
@@ -80,9 +80,9 @@ async def multimodal_search(prompt: Annotated[str, Form()],file: Annotated[Uploa
 
     try:
         if content_type in ("image/jpeg", "image/png", "image/jpg"):
-            reponse = llm_image(tmp_path, prompt)
+            reponse = llm_image(tmp_path, key_openapi, prompt)
         elif content_type == "application/pdf":
-            reponse = llm_pdf(tmp_path, prompt)
+            reponse = llm_pdf(tmp_path, key_openapi, prompt)
         else:
             raise HTTPException(status_code=400, detail="Type de fichier non pris en charge.")
     finally:
