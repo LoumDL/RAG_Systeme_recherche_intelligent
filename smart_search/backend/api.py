@@ -71,7 +71,7 @@ async def multimodal_search(prompt: Annotated[str, Form()],file: Annotated[Uploa
     content_type = file.content_type
     # Lecture du fichier en mémoire
     contents = await file.read()
-    # Création d'un fichier temporaire avec la bonne extension
+    # Création d'un fichier temporaire avec la bonne extension ,et je suis bloquer sur git
     suffix = Path(file.filename).suffix
     with tempfile.NamedTemporaryFile(delete=False, suffix=suffix) as tmp:
         tmp.write(contents)
