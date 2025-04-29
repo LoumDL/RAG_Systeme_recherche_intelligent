@@ -8,6 +8,12 @@ from typing import Annotated
 from src.llm_multimodal import llm_image, llm_pdf
 import tempfile, os
 from pathlib import Path
+from dotenv import load_dotenv
+
+
+env_path = Path(__file__).parent / ".env"
+load_dotenv(dotenv_path=env_path)
+key_openapi = os.getenv("KEY_OPENAPI")
 
 
 app = FastAPI()
@@ -65,7 +71,7 @@ async def multimodal_search(prompt: Annotated[str, Form()],file: Annotated[Uploa
       - nettoie le fichier temporaire
     """
 
-    key_openapi = "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"
+    
 
 
     content_type = file.content_type

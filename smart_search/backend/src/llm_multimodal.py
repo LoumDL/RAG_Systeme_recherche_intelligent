@@ -211,7 +211,7 @@ def llm_pdf(pdf_path: str, key_openapi: str, question: str = "What are the main 
 
 if __name__ == "__main__":
     
-    key_openapi = "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"  
+    key_openapi = "sk-or-..."  
     pdf_path = "../image/Draft_projet_Hakili_-_ISFAD_v0[1].pdf"  
 
     try:
