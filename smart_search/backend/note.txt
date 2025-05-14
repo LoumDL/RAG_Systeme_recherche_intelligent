@@ -22,6 +22,21 @@ base vectoriel qdrant:
     Pour l'installation de redis , on allons utiliser un conteneur docker : 
 
     -  docker run -d --name redis-stack -p 6379:6379 -p 8001:8001 redis/redis-stack:latest
+
+
+    
+    POUR run le LLM ollama 
+    docker run -d -v ollama:/root/.ollama -p 11434:11434 --name ollama ollama/ollama
+    docker exec -it ollama ollama run llama3
+
+    
+    pour se deplacer dans dans le terminale du conteneur    
+                      sudo docker exec -it ollama bash 
+    pour le modele :  ollama pull deepseek-r1 
+    pour le modele multimodale : llava-phi3 serait le meilleur 
+
+
+
     
 
     
