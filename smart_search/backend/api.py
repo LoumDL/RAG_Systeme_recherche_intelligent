@@ -12,6 +12,7 @@ from pathlib import Path
 from dotenv import load_dotenv
 import logging
 from fastapi.middleware.cors import CORSMiddleware
+from src.llm_multimodal_test import llm_image, llm_pdf
 
 # Configuration du logging
 logging.basicConfig(
@@ -206,13 +207,18 @@ async def multimodal_search(
             tmp.write(contents)
             tmp.flush()
             tmp_path = tmp.name
-            
+
+
+
         try:
             # Traitement selon le type de fichier
             if content_type in ("image/jpeg", "image/png", "image/jpg"):
-                reponse = llm_image(tmp_path, key_openapi, prompt)
+                #reponse = llm_image(tmp_path, key_openapi, prompt)
+                reponse = llm_image(tmp_path, prompt)
+                #reponse = chatbox(reponse)
             elif content_type == "application/pdf":
-                reponse = llm_pdf(tmp_path, key_openapi, prompt)
+                #reponse = llm_pdf(tmp_path, key_openapi, prompt)
+                reponse = llm_pdf(tmp_path, prompt)
             
             # Enregistrement dans l'historique en arrière-plan
             log_to_history(background_tasks, f"[Multimodal] {prompt}", reponse)
@@ -234,7 +240,10 @@ async def multimodal_search(
             # Nettoyage du fichier temporaire
             if os.path.exists(tmp_path):
                 os.remove(tmp_path)
-                
+
+
+
+
     except Exception as e:
         logger.error(f"Erreur lors du traitement multimodal: {str(e)}")
         raise HTTPException(status_code=500, detail=f"Erreur de traitement: {str(e)}")

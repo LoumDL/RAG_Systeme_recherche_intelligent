@@ -4,12 +4,12 @@ from pathlib import Path
 import requests
 import fitz  # PyMuPDF
 import tiktoken
-from texte import extraction_markdown
+from .texte import extraction_markdown
 from IPython.display import Markdown
 
 
 
-def analyze_image(image_path, question="Qu'y a-t-il dans cette image ?"):
+def llm_image(image_path, question="Qu'y a-t-il dans cette image ?"):
     """
     Analyse une image avec le modèle llava-phi3 via Ollama.
     
@@ -55,7 +55,7 @@ def analyze_image(image_path, question="Qu'y a-t-il dans cette image ?"):
 
 
 
-def analyze_pdf_text(pdf_path, question="De quoi parle ce document ?"):
+def llm_pdf(pdf_path, question="De quoi parle ce document ?"):
     """
     Extrait tout le texte d'un PDF, le tronque si trop long pour le modèle, 
     et l'envoie à Ollama avec une question.
@@ -110,7 +110,7 @@ if __name__ == "__main__":
     image_path = "./image/Dockerfile1.png"
     
     # Analyser l'image
-    reponse = analyze_image(image_path, "Décrivez cette image en détail. Repondes exclusivement en francais")
+    reponse = llm_image(image_path, "Décrivez cette image en détail. Repondes exclusivement en francais")
     
     # Afficher le résultat
     print(reponse)
@@ -119,7 +119,7 @@ if __name__ == "__main__":
     pdf_path = "./image/Draft_projet_Hakili_-_ISFAD_v0[1].pdf"
     
     # Analyser le PDF
-    reponse = analyze_pdf_text(pdf_path, "Résumez le contenu de ce document.Repondes exclusivement en francais")
+    reponse = llm_pdf(pdf_path, "Résumez le contenu de ce document.Repondes exclusivement en francais")
     
     # Afficher le résultat
     print(reponse)

@@ -47,6 +47,11 @@ a installler :
         pip install tiktoken
 
 
+pour voir l'activite du conteneur 
+    docker logs -f ollama
+
+
+
     
 
     
