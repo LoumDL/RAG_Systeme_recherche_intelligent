@@ -36,6 +36,16 @@ base vectoriel qdrant:
     pour le modele multimodale : llava-phi3 serait le meilleur 
 
 
+    A faire aujourd'huit : 
+        gerer le multimodale :
+            Pour traiter des images, il faut sélectionner un modèle multimodal dans la bibliothèque Ollama, par exemple llava:7b/13b/34b (LLaVA) ou llama3.2-vision, qui combinent un encodeur vision et l’LLM 
+            Pour les PDF, Ollama ne les ingère pas nativement : on extrait d’abord le texte (avec un parser PDF ou OCR), puis on passe ce texte au modèle via Ollama.
+
+
+a installler :
+        pip install PyMuPDF requests fitz
+        pip install tiktoken
+
 
     
 
