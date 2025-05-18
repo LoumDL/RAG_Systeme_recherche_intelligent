@@ -1,0 +1,23 @@
+Installation de nodejs :
+    # Pull the Node.js Docker image:
+        docker pull node:24-alpine
+
+# Create a Node.js container and start a Shell session:
+    docker run -it --rm --entrypoint sh node:24-alpine
+
+# Verify the Node.js version:
+    node -v # Should print "v24.0.2".
+
+# Verify npm version:
+    npm -v # Should print "11.3.0".
+
+
+
+#pour creer un nouveau projet nuxt :
+    npm create nuxt <nom du projet>
+        #Start development server with:
+            npm run dev 
+
+les dependances qu'il faut installer 
+    npm install @nuxtjs/tailwindcss pinia @pinia/nuxt
+

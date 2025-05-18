@@ -1,0 +1,268 @@
+/* assets/css/main.css */
+
+/* Reset et styles de base */
+* {
+  margin: 0;
+  padding: 0;
+  box-sizing: border-box;
+  font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+}
+
+body {
+  background-color: #f8f9fa;
+  color: #202124;
+  line-height: 1.5;
+  font-size: 14px;
+}
+
+/* Variables globales de couleurs IFAD */
+:root {
+  --ifad-primary: #1a73e8;     /* Bleu principal */
+  --ifad-primary-light: #e8f0fe;
+  --ifad-secondary: #4285f4;   /* Bleu secondaire */
+  --ifad-gray: #5f6368;
+  --ifad-light-gray: #f1f3f4;
+  --ifad-border: #e0e0e0;
+  --ifad-white: #ffffff;
+  --ifad-bg: #f8f9fa;
+}
+
+/* Utilitaires généraux */
+.flex {
+  display: flex;
+}
+
+.flex-col {
+  display: flex;
+  flex-direction: column;
+}
+
+.items-center {
+  align-items: center;
+}
+
+.justify-between {
+  justify-content: space-between;
+}
+
+.justify-center {
+  justify-content: center;
+}
+
+.w-full {
+  width: 100%;
+}
+
+.h-full {
+  height: 100%;
+}
+
+.p-4 {
+  padding: 16px;
+}
+
+.m-4 {
+  margin: 16px;
+}
+
+.mb-4 {
+  margin-bottom: 16px;
+}
+
+.mt-4 {
+  margin-top: 16px;
+}
+
+.rounded {
+  border-radius: 8px;
+}
+
+.rounded-full {
+  border-radius: 9999px;
+}
+
+.shadow {
+  box-shadow: 0 1px 2px rgba(0, 0, 0, 0.1);
+}
+
+.text-sm {
+  font-size: 12px;
+}
+
+.text-base {
+  font-size: 14px;
+}
+
+.text-lg {
+  font-size: 16px;
+}
+
+.font-bold {
+  font-weight: bold;
+}
+
+/* Styles pour les éléments communs */
+.card {
+  background-color: var(--ifad-white);
+  border-radius: 8px;
+  box-shadow: 0 1px 2px rgba(0, 0, 0, 0.1);
+  padding: 16px;
+  margin-bottom: 16px;
+}
+
+.btn {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  padding: 8px 16px;
+  border-radius: 4px;
+  font-size: 14px;
+  font-weight: 500;
+  cursor: pointer;
+  transition: background-color 0.2s, box-shadow 0.2s;
+  border: none;
+}
+
+.btn-primary {
+  background-color: var(--ifad-primary);
+  color: var(--ifad-white);
+}
+
+.btn-secondary {
+  background-color: var(--ifad-light-gray);
+  color: var(--ifad-gray);
+}
+
+.btn-icon {
+  width: 36px;
+  height: 36px;
+  padding: 0;
+  border-radius: 50%;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+/* Styles supplémentaires pour les composants de chat */
+.chat-bubble {
+  padding: 12px 16px;
+  border-radius: 18px;
+  max-width: 80%;
+  margin-bottom: 8px;
+  position: relative;
+}
+
+.chat-bubble-user {
+  background-color: var(--ifad-primary);
+  color: var(--ifad-white);
+  align-self: flex-end;
+  border-bottom-right-radius: 4px;
+}
+
+.chat-bubble-assistant {
+  background-color: var(--ifad-white);
+  color: #202124;
+  align-self: flex-start;
+  border-bottom-left-radius: 4px;
+}
+
+/* Animations */
+@keyframes fadeIn {
+  from { opacity: 0; }
+  to { opacity: 1; }
+}
+
+.fade-in {
+  animation: fadeIn 0.3s ease-in;
+}
+
+@keyframes slideUp {
+  from { transform: translateY(20px); opacity: 0; }
+  to { transform: translateY(0); opacity: 1; }
+}
+
+.slide-up {
+  animation: slideUp 0.3s ease-out;
+}
+
+/* Loading indicator */
+.typing-indicator {
+  display: flex;
+  align-items: center;
+  padding: 8px 16px;
+  background-color: var(--ifad-light-gray);
+  border-radius: 18px;
+  margin-bottom: 16px;
+  width: fit-content;
+}
+
+.typing-indicator span {
+  height: 8px;
+  width: 8px;
+  margin: 0 2px;
+  background-color: var(--ifad-gray);
+  border-radius: 50%;
+  display: inline-block;
+  opacity: 0.4;
+}
+
+.typing-indicator span:nth-child(1) {
+  animation: bounce 1s infinite 0.1s;
+}
+
+.typing-indicator span:nth-child(2) {
+  animation: bounce 1s infinite 0.2s;
+}
+
+.typing-indicator span:nth-child(3) {
+  animation: bounce 1s infinite 0.3s;
+}
+
+@keyframes bounce {
+  0%, 100% { transform: translateY(0); opacity: 0.4; }
+  50% { transform: translateY(-4px); opacity: 1; }
+}
+
+/* Styles adaptatifs pour mobile */
+@media (max-width: 768px) {
+  .app-container {
+    flex-direction: column;
+  }
+  
+  .sidebar {
+    width: 100%;
+    height: auto;
+    min-height: 56px;
+    flex-direction: row;
+    overflow-x: auto;
+    overflow-y: hidden;
+    position: fixed;
+    bottom: 0;
+    z-index: 100;
+  }
+  
+  .sidebar-menu {
+    display: flex;
+    padding: 0;
+  }
+  
+  .main-content {
+    margin-bottom: 56px;
+  }
+  
+  .chat-container {
+    padding: 12px;
+  }
+  
+  .message-container {
+    max-width: 100%;
+  }
+  
+  .message-actions {
+    flex-direction: column;
+  }
+  
+  .chat-input-container {
+    padding: 10px;
+  }
+}
