@@ -19,7 +19,8 @@ sentence-transformers
 moodle-dl
 ollama
 IPython
-
+python-dotenv
+requests
 
 
 

@@ -1,1 +1,5 @@
-isfad_courses/
+/smart_search/backend/log/
+/smart_search/backend/mardown_files/
+/smart_search/backend/__pycache__/
+/smart_search/backend/image/
+/smart_search/backend/.env
