@@ -36,7 +36,7 @@
     <div class="main-content">
       <div class="chat-header">
         <div class="chat-title">
-          <span>Assistant Halki</span>
+          <span>Smart_Search</span>
           <div class="model-badge">IA</div>
         </div>
         <div class="user-info">

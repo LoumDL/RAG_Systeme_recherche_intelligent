@@ -52,6 +52,11 @@ pour voir l'activite du conteneur
 
 
 
+
+ Le telechargement de documents dans moodle 
+    
+    moodle-dl --init  : pour l'initialisation 
+
     
 
     

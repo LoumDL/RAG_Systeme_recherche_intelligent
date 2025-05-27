@@ -11,7 +11,7 @@ from IPython.display import Markdown
 
 def llm_image(image_path, question="Qu'y a-t-il dans cette image ?"):
     """
-    Analyse une image avec le modèle llava-phi3 via Ollama.
+    Analyse une image avec le modèle llama3.2-vision via Ollama.
     
     Args:
         image_path: Chemin vers l'image à analyser
@@ -20,6 +20,7 @@ def llm_image(image_path, question="Qu'y a-t-il dans cette image ?"):
     Returns:
         Réponse textuelle du modèle
     """
+    question = question + " Répondez exclusivement en français."
     # Vérifier que le fichier existe
     path = Path(image_path)
     if not path.exists():
@@ -32,7 +33,7 @@ def llm_image(image_path, question="Qu'y a-t-il dans cette image ?"):
     # Préparer la requête pour Ollama
     ollama_url = "http://localhost:11434/api/generate"
     payload = {
-        "model": "llava-phi3",
+        "model": "llama3.2-vision:latest",
         "prompt": question,
         "images": [base64_image],
         "stream": False,

@@ -10,7 +10,7 @@ logger = logging.getLogger(__name__)
 
 # Paramètres de l'API Ollama
 OLLAMA_URL = "http://localhost:11434/api/generate"
-MODEL_NAME = "qwen3"
+MODEL_NAME = "qwen3"  #alternative on utilise qwen3 || qwen3:30b-a3b || qwen3:7b-a3b
 MAX_TOKENS = 512  # Augmenté pour des réponses plus complètes
 
 def llm(question: str) -> list[str]:

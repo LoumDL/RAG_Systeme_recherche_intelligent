@@ -9,6 +9,7 @@ from fastapi.encoders import jsonable_encoder
 import redis
 import json
 import hashlib
+from .texte import extraction_markdown, markdown_file, Chunker
 
 # Configuration du logging
 logging.basicConfig(level=logging.INFO, format='%(asctime)s - %(name)s - %(levelname)s - %(message)s')
@@ -393,7 +394,6 @@ def load_the_database(chemin_dossier=None):
     """
     try:
         # Importer les modules nécessaires ici pour éviter les dépendances circulaires
-        from .texte import extraction_markdown, markdown_file, Chunker
         
         # Utiliser le chemin par défaut si non spécifié
         if chemin_dossier is None:
