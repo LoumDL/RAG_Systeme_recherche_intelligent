@@ -3,10 +3,13 @@ from langdetect import detect
 from .db import query_qdrant, modeliserdonnee, inserer_chat, get_cached_response, set_cached_response
 import logging
 import re
+from .llm_key import llm_text
 
 # Configuration du logger
 logging.basicConfig(level=logging.INFO, format='%(asctime)s - %(name)s - %(levelname)s - %(message)s')
 logger = logging.getLogger(__name__)
+
+
 
 # Paramètres de l'API Ollama
 OLLAMA_URL = "http://localhost:11434/api/generate"
@@ -105,7 +108,8 @@ def chatbox(question: str) -> list[str]:
             return ["Veuillez poser une question."]
             
         # Obtention des résultats du LLM
-        resultats = llm(question)
+        #resultats = llm(question) 
+        resultats = llm_text(question)  # Utilisation de la fonction llm_text pour interroger le modèle
         
         # Enregistrement du dialogue pour référence future
         if resultats and len(resultats) > 0:

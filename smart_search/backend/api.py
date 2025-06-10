@@ -6,13 +6,14 @@ from src.llm import chatbox
 from src.db import inserer_chat, modeliserdonnee, set_redis, get_redis, get_cached_response, set_cached_response
 import uvicorn
 from typing import Annotated, Optional
-from src.llm_multimodal import llm_image, llm_pdf
+from src.llm_multimodal import llm_image_multimodal, llm_pdf_multimodal
 import tempfile, os, time, json
 from pathlib import Path
 from dotenv import load_dotenv
 import logging
 from fastapi.middleware.cors import CORSMiddleware
 from src.llm_multimodal_test import llm_image, llm_pdf
+from src.llm_key import llm_text
 
 # Configuration du logging
 logging.basicConfig(
@@ -52,6 +53,7 @@ app = FastAPI(
     version="1.0.0"
 )
 
+"""
 # Configuration CORS pour permettre les requêtes cross-origin
 app.add_middleware(
     CORSMiddleware,
@@ -61,6 +63,7 @@ app.add_middleware(
     allow_headers=["*"],
 )
 
+"""
 # Supprimé car maintenant importé de src.db
 
 def log_to_history(background_tasks: BackgroundTasks, question: str, reponse: str):
@@ -213,12 +216,12 @@ async def multimodal_search(
         try:
             # Traitement selon le type de fichier
             if content_type in ("image/jpeg", "image/png", "image/jpg"):
-                #reponse = llm_image(tmp_path, key_openapi, prompt)
-                reponse = llm_image(tmp_path, prompt)
+                reponse = llm_image_multimodal(tmp_path, key_openapi, prompt)
+                #reponse = llm_image(tmp_path, prompt)
                 #reponse = chatbox(reponse)
             elif content_type == "application/pdf":
-                #reponse = llm_pdf(tmp_path, key_openapi, prompt)
-                reponse = llm_pdf(tmp_path, prompt)
+                reponse = llm_pdf_multimodal(tmp_path, key_openapi, prompt)
+                #reponse = llm_pdf(tmp_path, prompt)
             
             # Enregistrement dans l'historique en arrière-plan
             log_to_history(background_tasks, f"[Multimodal] {prompt}", reponse)

@@ -1,0 +1,21 @@
+
+Installez moodle-dl 
+    pip install moodle-dl
+
+Configurez-le pour votre Moodle :
+    moodle-dl --init
+
+Pour télécharger uniquement les PDF de tous vos cours
+    moodle-dl --types pdf
+
+Pour automatiser le telechargement 
+    moodle-dl 
+
+        pour le filtrage du telechargement
+            moodle-dl -c 
+
+
+les adresse de connexion : 
+    url         =   https://fad.isfad-ucad.online
+    username    =   djibyloum@esp.sn
+    password    =   Passer#123
