@@ -109,7 +109,7 @@ def chatbox(question: str) -> list[str]:
             
         # Obtention des résultats du LLM
         #resultats = llm(question) 
-        resultats = llm_text(question)  # Utilisation de la fonction llm_text pour interroger le modèle
+        #resultats = llm_text(question)  # Utilisation de la fonction llm_text pour interroger le modèle
         
         # Enregistrement du dialogue pour référence future
         if resultats and len(resultats) > 0:

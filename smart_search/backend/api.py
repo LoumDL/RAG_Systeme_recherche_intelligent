@@ -115,13 +115,14 @@ async def smart_search_endpoint(
     
     try:
         # Générer une réponse via le LLM
-        reponse_list = chatbox(question)
+        #reponse_list = chatbox(question)
+        reponse_list = llm_text(question)
         
         if not reponse_list:
             raise HTTPException(status_code=500, detail="Le modèle n'a pas retourné de réponse")
             
         # Joindre les éléments de la liste en une seule chaîne
-        reponse = " ".join(reponse_list)
+        reponse = reponse_list if isinstance(reponse_list, str) else "".join(reponse_list)
         
         # Mettre en cache la réponse pour les futures requêtes
         set_cached_response(question, reponse)

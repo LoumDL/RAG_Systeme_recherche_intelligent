@@ -58,7 +58,7 @@ def llm_text(question: str) -> str:
                 "Content-Type": "application/json"  
             },
             data=json.dumps({
-                "model": "qwen/qwen3-235b-a22b",
+                "model": "deepseek/deepseek-r1-0528:free",
                 "messages": [
                     {
                         "role": "user",
