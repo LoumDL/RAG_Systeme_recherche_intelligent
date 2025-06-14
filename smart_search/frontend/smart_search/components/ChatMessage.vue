@@ -1,25 +1,40 @@
-// components/ChatMessage.vue
 <template>
-  <div class="message-container" :class="{ 'assistant-message': !isUser, 'user-message': isUser }">
-    <div class="message-avatar" v-if="!isUser">
-      <div class="avatar-circle">H</div>
+  <div class="message-container" :class="{ 'user-message': isUser, 'assistant-message': !isUser }">
+    <!-- Avatar -->
+    <div class="avatar-circle" v-if="!isUser">
+      {{ senderName?.charAt(0) || 'H' }}
     </div>
-    <div class="message-content" :class="{ 'error-message': isError }">
+    <div class="avatar-circle user-avatar" v-else>
+      <i class="fas fa-user"></i>
+    </div>
+
+    <!-- Message Content -->
+    <div class="message-content">
+      <!-- Sender Info -->
       <div class="message-header" v-if="!isUser">
-        <span class="message-sender">{{ senderName }}</span>
-        <span class="processing-time" v-if="processingTime">
-          {{ formatProcessingTime(processingTime) }}
-        </span>
+        <span class="sender-name">{{ senderName }}</span>
+        <span class="timestamp" v-if="processingTime">{{ processingTime }}</span>
       </div>
-      <div class="message-text formatted-content" v-html="formattedText"></div>
-      <div class="message-actions" v-if="!isUser && actions && actions.length > 0">
+
+      <!-- Message Text -->
+      <div class="message-text" :class="{ 'error-message': isError }">
+        <!-- Rendu markdown pour les messages non-utilisateur -->
+        <div v-if="!isUser" v-html="renderedMarkdown" class="markdown-content"></div>
+        <!-- Texte simple pour les messages utilisateur -->
+        <div v-else class="user-text">{{ text }}</div>
+      </div>
+
+      <!-- Actions -->
+      <div class="message-actions" v-if="actions && actions.length > 0 && !isUser">
         <button 
-          v-for="(action, index) in actions" 
-          :key="index" 
-          class="action-btn"
+          v-for="action in actions" 
+          :key="action.type"
           @click="$emit('action-clicked', action.type)"
+          class="action-btn"
+          :title="action.label"
         >
-          <i :class="action.icon"></i> {{ action.label }}
+          <i :class="action.icon"></i>
+          {{ action.label }}
         </button>
       </div>
     </div>
@@ -29,6 +44,7 @@
 <script setup>
 import { computed } from 'vue';
 
+// Props
 const props = defineProps({
   text: {
     type: String,
@@ -40,7 +56,7 @@ const props = defineProps({
   },
   senderName: {
     type: String,
-    default: 'Assistant Halki'
+    default: 'Assistant'
   },
   actions: {
     type: Array,
@@ -51,283 +67,549 @@ const props = defineProps({
     default: false
   },
   processingTime: {
-    type: Number,
-    default: null
+    type: String,
+    default: ''
   }
 });
 
+// Events
 defineEmits(['action-clicked']);
 
-// Fonction pour formater le texte sans dépendance externe
-const formattedText = computed(() => {
-  if (!props.text) return '';
-
-  // Si c'est un message utilisateur, on conserve le formatage simple
-  if (props.isUser) {
-    return props.text.replace(/\n/g, '<br>');
+// Fonction avancée pour convertir le markdown en HTML proprement
+const parseMarkdown = (text) => {
+  if (!text) return '';
+  
+  let html = text;
+  
+  // Nettoyer le texte d'abord
+  html = html.trim();
+  
+  // Supprimer les ### isolés qui ne sont pas des titres
+  html = html.replace(/\s###\s/g, ' ');
+  html = html.replace(/^###\s*$/gm, '');
+  
+  // Conversion des titres (ordre important : du plus spécifique au plus général)
+  html = html.replace(/^#### (.*$)/gm, '<h4 class="markdown-h4">$1</h4>');
+  html = html.replace(/^### (.*$)/gm, '<h3 class="markdown-h3">$1</h3>');
+  html = html.replace(/^## (.*$)/gm, '<h2 class="markdown-h2">$1</h2>');
+  html = html.replace(/^# (.*$)/gm, '<h1 class="markdown-h1">$1</h1>');
+  
+  // Séparateurs
+  html = html.replace(/^---+$/gm, '<hr class="markdown-separator">');
+  
+  // Gras et italique (ordre important)
+  html = html.replace(/\*\*\*(.*?)\*\*\*/g, '<strong class="markdown-bold"><em>$1</em></strong>');
+  html = html.replace(/\*\*(.*?)\*\*/g, '<strong class="markdown-bold">$1</strong>');
+  html = html.replace(/\*(.*?)\*/g, '<em class="markdown-italic">$1</em>');
+  
+  // Code inline
+  html = html.replace(/`([^`]+)`/g, '<code class="markdown-code">$1</code>');
+  
+  // Liens
+  html = html.replace(/\[([^\]]+)\]\(([^)]+)\)/g, '<a href="$2" class="markdown-link" target="_blank">$1</a>');
+  
+  // Citations
+  html = html.replace(/^> (.*$)/gm, '<blockquote class="markdown-quote">$1</blockquote>');
+  
+  // Traitement des listes (complexe)
+  const lines = html.split('\n');
+  const processedLines = [];
+  let inList = false;
+  let inNumberedList = false;
+  
+  for (let i = 0; i < lines.length; i++) {
+    const line = lines[i];
+    const trimmedLine = line.trim();
+    
+    // Liste à puces
+    if (trimmedLine.match(/^- .+/)) {
+      if (!inList) {
+        processedLines.push('<ul class="markdown-list">');
+        inList = true;
+      }
+      processedLines.push(`<li class="markdown-list-item">${trimmedLine.substring(2).trim()}</li>`);
+    }
+    // Liste numérotée
+    else if (trimmedLine.match(/^\d+\. .+/)) {
+      if (!inNumberedList) {
+        processedLines.push('<ol class="markdown-numbered-list">');
+        inNumberedList = true;
+      }
+      const content = trimmedLine.replace(/^\d+\.\s*/, '');
+      processedLines.push(`<li class="markdown-numbered-item">${content}</li>`);
+    }
+    // Ligne normale
+    else {
+      // Fermer les listes si nécessaire
+      if (inList) {
+        processedLines.push('</ul>');
+        inList = false;
+      }
+      if (inNumberedList) {
+        processedLines.push('</ol>');
+        inNumberedList = false;
+      }
+      processedLines.push(line);
+    }
   }
   
-  // Pour les messages de l'assistant, on applique un formatage personnalisé
-  let html = props.text;
+  // Fermer les listes ouvertes
+  if (inList) processedLines.push('</ul>');
+  if (inNumberedList) processedLines.push('</ol>');
   
-  // Traiter les titres (h1 à h3)
-  html = html.replace(/^# (.+)$/gm, '<h1>$1</h1>');
-  html = html.replace(/^## (.+)$/gm, '<h2>$1</h2>');
-  html = html.replace(/^### (.+)$/gm, '<h3>$1</h3>');
+  html = processedLines.join('\n');
   
-  // Traiter les listes à puces
-  html = html.replace(/^- (.+)$/gm, '<li>$1</li>');
-  html = html.replace(/<li>(.+)<\/li>(\s*)<li>/g, '<li>$1</li><ul><li>');
-  html = html.replace(/<\/li>(\s*)$/g, '</li></ul>');
-
-  // Traiter les paragraphes
-  const paragraphs = html.split('\n\n');
-  html = paragraphs.map(p => {
-    if (!p.trim()) return '';
-    if (p.match(/^<h[1-3]>|^<ul>|^<li>/)) return p; // Ne pas envelopper les titres et listes
-    return `<p>${p}</p>`;
-  }).join('\n');
+  // Convertir en paragraphes (éviter les éléments de bloc)
+  const paragraphs = html.split('\n\n').filter(p => p.trim());
+  html = paragraphs.map(paragraph => {
+    const trimmed = paragraph.trim();
+    
+    // Ne pas encapsuler dans <p> si c'est déjà un élément de bloc
+    if (trimmed.match(/^<(h[1-6]|ul|ol|blockquote|hr|div)/)) {
+      return trimmed;
+    }
+    
+    // Ne pas encapsuler les lignes vides
+    if (!trimmed) {
+      return '';
+    }
+    
+    // Encapsuler le reste dans des paragraphes
+    return `<p class="markdown-paragraph">${trimmed.replace(/\n/g, '<br>')}</p>`;
+  }).filter(p => p).join('\n');
   
-  // Traiter le gras
-  html = html.replace(/\*\*([^*]+)\*\*/g, '<strong>$1</strong>');
-  
-  // Traiter l'italique
-  html = html.replace(/\*([^*]+)\*/g, '<em>$1</em>');
-  
-  // Traiter les séparateurs
-  html = html.replace(/^---$/gm, '<hr>');
-  
-  // Remplacer les sauts de ligne simples par des <br> à l'intérieur des paragraphes
-  html = html.replace(/<p>(.+?)\n(.+?)<\/p>/gs, (match, p1, p2) => {
-    return `<p>${p1}<br>${p2}</p>`;
-  });
-  
-  // Nettoyer et finaliser
-  html = html.replace(/\n/g, ' ');
+  // Nettoyage final
+  html = html.replace(/\n{3,}/g, '\n\n'); // Réduire les espaces multiples
+  html = html.replace(/<p class="markdown-paragraph">\s*<\/p>/g, ''); // Supprimer paragraphes vides
   
   return html;
-});
-
-// Formater le temps de traitement
-const formatProcessingTime = (seconds) => {
-  if (seconds < 0.01) return 'Instantané';
-  if (seconds < 1) return `${Math.round(seconds * 1000)}ms`;
-  return `${seconds.toFixed(2)}s`;
 };
+
+// Computed pour le rendu markdown
+const renderedMarkdown = computed(() => {
+  return parseMarkdown(props.text);
+});
 </script>
 
-<style>
-/* Styles pour le contenu formaté */
-.formatted-content {
-  line-height: 1.6;
-}
-
-.formatted-content h1 {
-  font-size: 1.8em;
-  margin: 1em 0 0.5em;
-  padding-bottom: 0.3em;
-  border-bottom: 1px solid #eaecef;
-  color: #24292e;
-}
-
-.formatted-content h2 {
-  font-size: 1.5em;
-  margin: 1em 0 0.5em;
-  padding-bottom: 0.2em;
-  color: #0366d6;
-}
-
-.formatted-content h3 {
-  font-size: 1.25em;
-  margin: 1em 0 0.5em;
-  color: #24292e;
-}
-
-.formatted-content p {
-  margin: 0.7em 0;
-}
-
-.formatted-content ul, .formatted-content ol {
-  margin: 0.7em 0;
-  padding-left: 2em;
-}
-
-.formatted-content li {
-  margin: 0.3em 0;
-}
-
-.formatted-content hr {
-  height: 1px;
-  padding: 0;
-  margin: 1.5em 0;
-  background-color: #e1e4e8;
-  border: 0;
-}
-
-.formatted-content strong {
-  font-weight: 600;
-}
-
-.formatted-content em {
-  font-style: italic;
-}
-
-/* Styles spécifiques pour les messages */
+<style scoped>
 .message-container {
   display: flex;
+  align-items: flex-start;
   margin-bottom: 20px;
-  transition: all 0.3s ease;
-}
-
-.assistant-message {
-  align-self: flex-start;
-  max-width: 90%;
+  animation: slideIn 0.3s ease-out;
 }
 
 .user-message {
-  align-self: flex-end;
-  justify-content: flex-end;
-  max-width: 80%;
+  flex-direction: row-reverse;
 }
 
-.message-avatar {
-  margin-right: 12px;
-  align-self: flex-start;
+.assistant-message {
+  flex-direction: row;
 }
 
 .avatar-circle {
-  width: 32px;
-  height: 32px;
+  width: 36px;
+  height: 36px;
   border-radius: 50%;
-  background-color: #1a73e8;
   display: flex;
   align-items: center;
   justify-content: center;
-  color: white;
   font-weight: bold;
+  font-size: 14px;
+  flex-shrink: 0;
+}
+
+.assistant-message .avatar-circle {
+  background-color: #1a73e8;
+  color: white;
+  margin-right: 12px;
+}
+
+.user-message .avatar-circle {
+  background-color: #34a853;
+  color: white;
+  margin-left: 12px;
 }
 
 .message-content {
-  background-color: white;
-  padding: 16px 20px;
-  border-radius: 8px;
-  box-shadow: 0 1px 2px rgba(0, 0, 0, 0.1);
-  transform-origin: left center;
-  transition: transform 0.2s ease;
-  position: relative;
-}
-
-.message-content:hover {
-  transform: scale(1.01);
-}
-
-.user-message .message-content {
-  background-color: #1a73e8;
-  color: white;
-  transform-origin: right center;
-}
-
-.error-message {
-  background-color: #fdeded !important;
-  border-left: 3px solid #ea4335;
-  color: #5f6368 !important;
+  max-width: 80%;
+  min-width: 200px;
 }
 
 .message-header {
-  margin-bottom: 10px;
-  font-size: 14px;
-  color: #5f6368;
   display: flex;
-  justify-content: space-between;
   align-items: center;
-  border-bottom: 1px solid #f1f3f4;
-  padding-bottom: 8px;
+  margin-bottom: 6px;
+  gap: 10px;
 }
 
-.processing-time {
+.sender-name {
+  font-weight: 600;
+  font-size: 14px;
+  color: #202124;
+}
+
+.timestamp {
   font-size: 12px;
-  color: #9aa0a6;
-  font-weight: normal;
-}
-
-.user-message .message-header {
-  color: rgba(255, 255, 255, 0.8);
+  color: #5f6368;
+  background-color: #f1f3f4;
+  padding: 2px 6px;
+  border-radius: 8px;
 }
 
 .message-text {
-  font-size: 14px;
+  background-color: white;
+  padding: 16px 20px;
+  border-radius: 18px;
+  box-shadow: 0 1px 3px rgba(0, 0, 0, 0.1);
   line-height: 1.5;
+  word-wrap: break-word;
 }
 
+.user-message .message-text {
+  background-color: #1a73e8;
+  color: white;
+  border-radius: 18px 18px 4px 18px;
+}
+
+.assistant-message .message-text {
+  border-radius: 4px 18px 18px 18px;
+}
+
+.error-message {
+  background-color: #fce8e6;
+  border-left: 4px solid #ea4335;
+  color: #d93025;
+}
+
+.user-text {
+  font-size: 15px;
+}
+
+/* Styles pour le contenu Markdown */
+.markdown-content {
+  font-size: 15px;
+  color: #202124;
+}
+
+/* Styles pour les sections numérotées spéciales */
+:deep(.numbered-section) {
+  margin: 20px 0;
+  padding: 16px;
+  border: 2px solid #e8f0fe;
+  border-radius: 12px;
+  background: linear-gradient(135deg, #fafbff 0%, #f8fbff 100%);
+  box-shadow: 0 3px 6px rgba(26, 115, 232, 0.1);
+  position: relative;
+}
+
+:deep(.section-number) {
+  display: inline-block;
+  background: linear-gradient(135deg, #1a73e8 0%, #1967d2 100%);
+  color: white;
+  font-weight: 700;
+  font-size: 16px;
+  padding: 8px 12px;
+  border-radius: 50%;
+  margin-right: 12px;
+  min-width: 40px;
+  text-align: center;
+  box-shadow: 0 2px 4px rgba(26, 115, 232, 0.3);
+}
+
+:deep(.section-title) {
+  font-size: 18px;
+  font-weight: 700;
+  color: #1a73e8;
+  margin-right: 8px;
+}
+
+:deep(.section-separator) {
+  font-size: 18px;
+  font-weight: 700;
+  color: #34a853;
+  margin-right: 12px;
+}
+
+:deep(.section-content) {
+  margin-top: 12px;
+  padding-left: 52px;
+  line-height: 1.7;
+  color: #333;
+  font-size: 15px;
+  text-align: justify;
+}
+
+/* Styles pour les titres */
+:deep(.markdown-h1) {
+  font-size: 28px;
+  font-weight: 700;
+  color: #1a73e8;
+  margin: 32px 0 20px 0;
+  padding: 12px 0;
+  border-bottom: 3px solid #1a73e8;
+  text-align: center;
+  background: linear-gradient(135deg, #f8fbff 0%, #e8f0fe 100%);
+  border-radius: 8px;
+  box-shadow: 0 2px 4px rgba(26, 115, 232, 0.1);
+}
+
+:deep(.markdown-h2) {
+  font-size: 22px;
+  font-weight: 600;
+  color: #1967d2;
+  margin: 24px 0 16px 0;
+  padding: 8px 12px;
+  border-left: 4px solid #1967d2;
+  background-color: #f8fbff;
+  border-radius: 0 6px 6px 0;
+}
+
+:deep(.markdown-h3) {
+  font-size: 19px;
+  font-weight: 600;
+  color: #1557b0;
+  margin: 20px 0 12px 0;
+  padding: 6px 0;
+  border-bottom: 2px dotted #1557b0;
+}
+
+:deep(.markdown-h4) {
+  font-size: 17px;
+  font-weight: 500;
+  color: #174ea6;
+  margin: 16px 0 8px 0;
+  font-style: italic;
+}
+
+/* Styles pour les paragraphes */
+:deep(.markdown-paragraph) {
+  margin: 14px 0;
+  line-height: 1.7;
+  text-align: justify;
+  text-indent: 0;
+  color: #333;
+  font-size: 15px;
+}
+
+/* Styles pour le texte en gras et italique */
+:deep(.markdown-bold) {
+  font-weight: 700;
+  color: #1a73e8;
+  background: linear-gradient(120deg, transparent 0%, rgba(26, 115, 232, 0.1) 100%);
+  padding: 1px 3px;
+  border-radius: 3px;
+}
+
+:deep(.markdown-italic) {
+  font-style: italic;
+  color: #5f6368;
+  font-weight: 500;
+}
+
+/* Styles pour les listes */
+:deep(.markdown-list) {
+  margin: 18px 0;
+  padding-left: 0;
+  background-color: #fafbfc;
+  border-radius: 8px;
+  padding: 12px;
+  border-left: 3px solid #34a853;
+}
+
+:deep(.markdown-list-item) {
+  margin: 10px 0;
+  padding: 8px 0 8px 28px;
+  position: relative;
+  list-style: none;
+  color: #333;
+  line-height: 1.6;
+  border-bottom: 1px dotted #e0e0e0;
+}
+
+:deep(.markdown-list-item:last-child) {
+  border-bottom: none;
+}
+
+:deep(.markdown-list-item::before) {
+  content: "▶";
+  color: #34a853;
+  font-weight: bold;
+  position: absolute;
+  left: 8px;
+  top: 8px;
+  font-size: 12px;
+}
+
+:deep(.markdown-numbered-list) {
+  margin: 18px 0;
+  padding: 12px 12px 12px 32px;
+  background-color: #fff8e1;
+  border-radius: 8px;
+  border-left: 3px solid #fbbc04;
+  counter-reset: list-counter;
+}
+
+:deep(.markdown-numbered-item) {
+  margin: 10px 0;
+  padding: 8px 0;
+  color: #333;
+  line-height: 1.6;
+  counter-increment: list-counter;
+  border-bottom: 1px dotted #e0e0e0;
+  position: relative;
+}
+
+:deep(.markdown-numbered-item:last-child) {
+  border-bottom: none;
+}
+
+:deep(.markdown-numbered-item::before) {
+  content: counter(list-counter) ".";
+  color: #fbbc04;
+  font-weight: bold;
+  position: absolute;
+  left: -20px;
+  top: 8px;
+  background-color: #fff;
+  border-radius: 50%;
+  width: 18px;
+  height: 18px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 12px;
+  border: 2px solid #fbbc04;
+}
+
+/* Styles pour les citations */
+:deep(.markdown-quote) {
+  border-left: 5px solid #ea4335;
+  padding: 16px 20px;
+  margin: 20px 0;
+  background: linear-gradient(135deg, #fef7f0 0%, #fce8e6 100%);
+  border-radius: 0 12px 12px 0;
+  font-style: italic;
+  color: #d93025;
+  position: relative;
+  box-shadow: 2px 2px 8px rgba(234, 67, 53, 0.1);
+}
+
+:deep(.markdown-quote::before) {
+  content: '"';
+  font-size: 48px;
+  color: #ea4335;
+  position: absolute;
+  left: -10px;
+  top: -10px;
+  opacity: 0.3;
+}
+
+/* Styles pour le code */
+:deep(.markdown-code) {
+  background: linear-gradient(135deg, #f1f3f4 0%, #e8eaed 100%);
+  padding: 4px 8px;
+  border-radius: 6px;
+  font-family: 'Courier New', Monaco, monospace;
+  font-size: 13px;
+  color: #d93025;
+  border: 1px solid #dadce0;
+  font-weight: 500;
+  box-shadow: inset 0 1px 2px rgba(0, 0, 0, 0.1);
+}
+
+/* Styles pour les séparateurs */
+:deep(.markdown-separator) {
+  border: none;
+  height: 3px;
+  background: linear-gradient(90deg, transparent 0%, #1a73e8 20%, #34a853 50%, #fbbc04 80%, transparent 100%);
+  margin: 32px 0;
+  border-radius: 2px;
+  box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+}
+
+/* Styles pour les liens */
+:deep(.markdown-link) {
+  color: #1a73e8;
+  text-decoration: none;
+  border-bottom: 2px dotted #1a73e8;
+  transition: all 0.3s ease;
+  padding: 2px 4px;
+  border-radius: 4px;
+  font-weight: 500;
+}
+
+:deep(.markdown-link:hover) {
+  background: linear-gradient(135deg, #e8f0fe 0%, #cfe2ff 100%);
+  border-bottom: 2px solid #1a73e8;
+  transform: translateY(-1px);
+  box-shadow: 0 2px 4px rgba(26, 115, 232, 0.2);
+}
+
+/* Actions */
 .message-actions {
   display: flex;
-  flex-wrap: wrap;
   gap: 8px;
-  margin-top: 16px;
-  padding-top: 12px;
-  border-top: 1px solid #f1f3f4;
-  transition: opacity 0.2s ease;
-  opacity: 0.8;
-}
-
-.message-content:hover .message-actions {
-  opacity: 1;
+  margin-top: 12px;
+  flex-wrap: wrap;
 }
 
 .action-btn {
-  padding: 6px 10px;
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  padding: 6px 12px;
   background-color: #f1f3f4;
   border: none;
   border-radius: 16px;
   font-size: 12px;
+  color: #5f6368;
   cursor: pointer;
-  display: flex;
-  align-items: center;
-  transition: background-color 0.2s, transform 0.1s;
+  transition: all 0.2s ease;
 }
 
 .action-btn:hover {
   background-color: #e8eaed;
-  transform: translateY(-1px);
-}
-
-.action-btn:active {
-  transform: translateY(0);
+  color: #202124;
 }
 
 .action-btn i {
-  margin-right: 6px;
   font-size: 12px;
 }
 
-/* Mobile Responsive Styles */
+/* Animation */
+@keyframes slideIn {
+  from {
+    opacity: 0;
+    transform: translateY(10px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+/* Responsive */
 @media (max-width: 768px) {
-  .message-container {
-    max-width: 95%;
-  }
-  
-  .message-avatar {
-    margin-right: 8px;
-  }
-  
-  .avatar-circle {
-    width: 28px;
-    height: 28px;
-    font-size: 12px;
-  }
-  
   .message-content {
+    max-width: 85%;
+    min-width: 150px;
+  }
+  
+  .message-text {
     padding: 12px 16px;
   }
   
-  .message-actions {
-    flex-direction: column;
-    gap: 6px;
+  :deep(.markdown-h1) {
+    font-size: 20px;
   }
   
-  .action-btn {
-    font-size: 11px;
-    padding: 5px 8px;
+  :deep(.markdown-h2) {
+    font-size: 18px;
+  }
+  
+  :deep(.markdown-h3) {
+    font-size: 16px;
   }
 }
 </style>

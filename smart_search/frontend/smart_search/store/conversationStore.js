@@ -37,8 +37,8 @@ export const useConversationStore = defineStore('conversation', {
       const welcomeMsg = {
         id: `msg-${Date.now()}`,
         sender: 'assistant',
-        senderName: 'Assistant Halki',
-        text: "# Bienvenue sur l'Assistant Halki\n\nJe suis l'assistant virtuel de l'IFAD. Comment puis-je vous aider aujourd'hui?\n\nVous pouvez me poser des questions sur divers sujets. Je suis capable de structurer mes réponses de manière claire.",
+        senderName: 'Assistant Hakili',
+        text: "# Bienvenue sur l'Assistant Hakili\n\nJe suis l'assistant virtuel de l'ISFAD. Comment puis-je vous aider aujourd'hui?\n\nVous pouvez me poser des questions sur divers sujets. Je suis capable de structurer mes réponses de manière claire.",
         timestamp: now,
         actions: [
           { type: 'extract', label: 'Texte réimprimable (à extraire)', icon: 'fas fa-copy' },

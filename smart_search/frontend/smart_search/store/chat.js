@@ -57,8 +57,8 @@ export const useChatStore = defineStore('chat', {
             id: '1',
             conversationId,
             sender: 'assistant',
-            senderName: 'Assistant Halki',
-            text: "Bonjour! 👋 Je suis l'assistant virtuel de l'IFAD. Comment puis-je vous aider aujourd'hui?\n\nVous pouvez me poser des questions sur nos cours, les détails de cours, ou d'autres questions.",
+            senderName: 'Assistant Hakili',
+            text: "Bonjour! 👋 Je suis l'assistant virtuel de l'ISFAD. Comment puis-je vous aider aujourd'hui?\n\nVous pouvez me poser des questions sur nos cours, les détails de cours, ou d'autres questions.",
             timestamp: new Date().toISOString(),
             actions: [
               { type: 'extract', label: 'Texte réimprimable (à extraire)', icon: 'fas fa-copy' },
@@ -102,8 +102,8 @@ export const useChatStore = defineStore('chat', {
             id: `assistant-${Date.now()}`,
             conversationId: this.currentConversationId,
             sender: 'assistant',
-            senderName: 'Assistant Halki',
-            text: "Je peux vous aider pour le module de sensibilisation IFAD-2022-001 à mettre avant le 15 juillet.\n\nLes informations principales sont sur les détails d'eic (header_footer). Pouvez-vous être plus spécifique ?",
+            senderName: 'Assistant Hakili',
+            text: "Je peux vous aider pour le module de sensibilisation ISFAD-2022-001 à mettre avant le 15 juillet.\n\nLes informations principales sont sur les détails d'eic (header_footer). Pouvez-vous être plus spécifique ?",
             timestamp: new Date().toISOString(),
             actions: [
               { type: 'location', label: 'Accéder à l\'endroit décrit', icon: 'fas fa-map-pin' },
@@ -145,8 +145,8 @@ export const useChatStore = defineStore('chat', {
             id: '1',
             conversationId: newConversationId,
             sender: 'assistant',
-            senderName: 'Assistant Halki',
-            text: "Bonjour! 👋 Je suis l'assistant virtuel de l'IFAD. Comment puis-je vous aider aujourd'hui?\n\nVous pouvez me poser des questions sur nos cours, les détails de cours, ou d'autres questions.",
+            senderName: 'Assistant Hakili',
+            text: "Bonjour! 👋 Je suis l'assistant virtuel de l'ISFAD. Comment puis-je vous aider aujourd'hui?\n\nVous pouvez me poser des questions sur nos cours, les détails de cours, ou d'autres questions.",
             timestamp: new Date().toISOString(),
             actions: [
               { type: 'extract', label: 'Texte réimprimable (à extraire)', icon: 'fas fa-copy' },
